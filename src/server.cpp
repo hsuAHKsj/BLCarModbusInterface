@@ -58,7 +58,7 @@ static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((\d+)\))
 static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((\d+)\))");
 
 
-static std::regex get_left_motor_state("GET_LEFT_MOMTOR_STATE\\(\\)");
+static std::regex get_left_motor_state("GET_LEFT_MOTOR_STATE\\(\\)");
 static int left_motor_state;
 
 static std::regex get_right_motor_state("GET_RIGHT_MOTOR_STATE\\(\\)");
