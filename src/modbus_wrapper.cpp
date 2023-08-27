@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
-
+#include "common.h"
 ModbusWrapper::ModbusWrapper(const std::string &ip, int port) {    
     mb_ptr = new modbus(ip, port);
 }
@@ -66,8 +66,13 @@ ModbusWrapper::~ModbusWrapper() {
     close();
 }
 
-bool ModbusWrapper::connect() {
-    return mb_ptr->modbus_connect();
+int ModbusWrapper::connect() {
+    
+    if(mb_ptr->modbus_connect()){
+        return 0;
+    }
+
+    return -1;
 }
 
 void ModbusWrapper::close() {
@@ -115,7 +120,6 @@ Register ModbusWrapper::read_all_holding_registers(bool print) {
 }
 
 int ModbusWrapper::read_all_holding_registers(int16_t address, int16_t amount, int16_t *buffer){
-	
 	return  mb_ptr->modbus_read_holding_registers(address, amount, buffer);
 
 }
