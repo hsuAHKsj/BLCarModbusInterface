@@ -59,7 +59,7 @@ using X_SOCKET = int;
 using SOCKADDR = struct sockaddr;
 using SOCKADDR_IN = struct sockaddr_in;
 
-#define MAX_MSG_LENGTH 260
+#define MAX_MSG_LENGTH 260000
 
 ///Function Code
 #define READ_COILS 0x01

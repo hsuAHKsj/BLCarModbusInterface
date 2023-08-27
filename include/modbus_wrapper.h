@@ -11,7 +11,7 @@ public:
     ModbusWrapper(const std::string &ip, int port);
     ~ModbusWrapper();
 
-    bool connect();
+    int connect();
     void close();
 
     void parse_config(const std::string CONFIG_CSV);

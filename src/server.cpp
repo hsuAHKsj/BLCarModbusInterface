@@ -58,13 +58,13 @@ static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((\d+)\))
 static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((\d+)\))");
 
 
-static std::regex get_left_motor_state("GET_LEFT_MOMTOR_STATE\\(\\)");
+static std::regex get_left_motor_state("GET_LEFT_MOTOR_STATE\\(\\)");
 static int left_motor_state;
 
 static std::regex get_right_motor_state("GET_RIGHT_MOTOR_STATE\\(\\)");
 static int right_motor_state;
 
-static std::regex get_lifter_motor_state("GET_LIFTER_MOMTOR_STATE\\(\\)");
+static std::regex get_lifter_motor_state("GET_LIFTER_MOTOR_STATE\\(\\)");
 static int lifter_motor_state;
 
 static std::regex get_car_state("GET_CAR_STATE\\(\\)");
@@ -78,23 +78,23 @@ void SocketServer::handleClient(int clientSocket) {
 
     char buffer[1024];
     std::shared_ptr<Controller> mcontroller = std::make_shared<Controller>();
-    
+    bool connect_status = false;
     while(1){
         ssize_t bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
         if (bytesRead <= 0) {
             close(clientSocket);
-            spdlog::info("clientSocket close \r\n");
+            spdlog::info("clientSocket close");
             return;
         }
 
         buffer[bytesRead] = '\0';
         std::string request(buffer);
-        spdlog::info("request: {}\r\n", request);
+        spdlog::info("request: {}", request);
         std::smatch match;
         int ret = 0;
 
-        std::string fail1 = "{failed:-1}";
-        std::string fail2 = "{failed:-2}";
+        std::string fail1 = "{failed:-1}";//connect failed
+        std::string fail2 = "{failed:-2}";//emergency stop
 
         if (std::regex_search(request, match, mconnect)) {
             std::string ip = std::string(match[1]);
@@ -104,19 +104,31 @@ void SocketServer::handleClient(int clientSocket) {
                 send(clientSocket, fail1.c_str(), fail1.size(), 0);
                 continue;
             }
+            connect_status = true;
             spdlog::info(" {} connect \r\n", ip);
-        }else if(std::regex_search(request, match, disconnect)) {
+            std::string success = "{connect success}";
+            send(clientSocket, success.c_str(), success.size(), 0);
+            continue;
+        } 
+        
+        if(!connect_status) {
+            spdlog::info("connect failed\r\n");
+            send(clientSocket, fail1.c_str(), fail1.size(), 0);
+            continue;
+        }
+        
+        if(std::regex_search(request, match, disconnect)) {
             ret = mcontroller->DISCONNECT();
             mcontroller->run();
-            spdlog::info(" {} disconnect \r\n", mcontroller->get_ip());
+            spdlog::info("disconnect \r\n");
             break;
         }else if(std::regex_search(request, match, emergency_stop)){
             ret = mcontroller->EMERGENCY_STOP();
-            spdlog::info(" {} emergency_stop \r\n", mcontroller->get_ip());
+            spdlog::info("emergency_stop \r\n");
 
         }else if(std::regex_search(request, match, motor_enable)){
             ret = mcontroller->MOTOR_ENABLE();
-            spdlog::info(" {} motor_enable \r\n", mcontroller->get_ip());
+            spdlog::info("motor_enable \r\n");
 
         }else if(std::regex_search(request, match, speedj_left_wheel_motor)){
             std::string sspeed = std::string(match[1]);
@@ -149,7 +161,7 @@ void SocketServer::handleClient(int clientSocket) {
             spdlog::info(" {} speedj_lifter_motor {} \r\n", mcontroller->get_ip(), speed);
 
         }else if(std::regex_search(request, match, get_left_motor_state)){
-            std::string response = mcontroller->GET_LEFT_MOMTOR_STATE();
+            std::string response = mcontroller->GET_LEFT_MOTOR_STATE();
             spdlog::info(" {} get_left_motor_state {}\r\n", mcontroller->get_ip(),response);
             
             send(clientSocket, response.c_str(), response.size(), 0);
@@ -162,7 +174,7 @@ void SocketServer::handleClient(int clientSocket) {
             continue;
 
         }else if(std::regex_search(request, match, get_lifter_motor_state)){
-            std::string response  = mcontroller->GET_LIFTER_MOMTOR_STATE();
+            std::string response  = mcontroller->GET_LIFTER_MOTOR_STATE();
             spdlog::info(" {} get_lifter_motor_state \r\n", mcontroller->get_ip(), response);
 
             send(clientSocket, response.c_str(), response.size(), 0);

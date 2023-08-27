@@ -105,13 +105,15 @@ public:
         connectflag = true;
         m_ip = ip;
 
-        std::thread(std::bind(&Controller::run, this)).detach();
+       
 
-        modbusptr = std::make_shared<ModbusWrapper>("192.168.1.120", 502);
+        modbusptr = std::make_shared<ModbusWrapper>(ip, 502);
         std::string csv_data = "../data/read_modbus_config.csv";
         modbusptr->parse_config(csv_data);
         ret = modbusptr->connect();
-
+        if(ret == 0) {
+            std::thread(std::bind(&Controller::run, this)).detach();
+        }
         return ret;
     }
     int DISCONNECT(){
@@ -150,9 +152,14 @@ public:
         return ret;    
     } 
 
-    std::string GET_LEFT_MOMTOR_STATE(){
+    std::string GET_LEFT_MOTOR_STATE(){
         int ret = 0;
-        ret = read_all_holding_register();
+        int start = 810;
+        ret = read_all_holding_register(start,motordata_buffer);
+        if(ret != 0) {
+            return {"GET_LEFT_MOTOR_STATE failed"};
+        }
+        ret = get_motorcontroll_state(start, motordata_buffer, 1);
 
         std::string val = {}; 
         if(ret == 0) {
@@ -163,7 +170,7 @@ public:
             temp["PositionL1"] = PositionL1;  
             temp["PositionH1"] = PositionH1;
           
-            spdlog::debug("GET_LIFTER_MOMTOR_STATE {}", temp.dump());
+            spdlog::debug("GET_LEFT_MOTOR_STATE {}", temp.dump());
             return temp.dump();
         }
         return val;
@@ -171,7 +178,12 @@ public:
 
     std::string GET_RIGHT_MOTOR_STATE(){
         int ret = 0;
-        ret = read_all_holding_register();
+        int start = 820;
+        ret = read_all_holding_register(start, motordata_buffer);
+        if(ret != 0) {
+            return {"GET_RIGHT_MOTOR_STATE failed"};
+        }
+        ret = get_motorcontroll_state(start, motordata_buffer, 2);
         std::string val = {}; 
             if(ret == 0) {
             json temp;
@@ -187,9 +199,15 @@ public:
         return val;
     }
 
-    std::string GET_LIFTER_MOMTOR_STATE(){
+    std::string GET_LIFTER_MOTOR_STATE(){
         int ret = 0;
-        ret = read_all_holding_register();
+        int start = 830;
+        ret = read_all_holding_register(start, motordata_buffer);
+        if(ret != 0) {
+            return {"GET_LIFTER_MOTOR_STATE failed"};
+        }
+        ret = get_motorcontroll_state(start, motordata_buffer, 3);
+        
         std::string val = {}; 
         if(ret == 0) {
             json temp;
@@ -198,8 +216,8 @@ public:
             temp["Speed3"] = Speed3;
             temp["PositionL3"] = PositionL3;  
             temp["PositionH3"] = PositionH3;
-          
-            spdlog::debug("GET_LIFTER_MOMTOR_STATE {}", temp.dump());
+        
+            spdlog::debug("GET_LIFTER_MOTOR_STATE {}", temp.dump());
             return temp.dump();
         }
         return val;
@@ -207,7 +225,13 @@ public:
 
     std::string GET_CAR_STATE(){
         int ret = 0;
-        ret = read_all_holding_register();
+        int start = 10;
+        ret = read_all_holding_register(start,cardata_buffer);
+        if(ret != 0) {
+            return {"GET_CAR_STATE failed"};
+        }
+        ret = get_car_state(start, cardata_buffer);
+
         std::string val = {}; 
         if(ret == 0) {
            json temp;
@@ -222,7 +246,15 @@ public:
 
     std::string GET_BACTTERTY_STATE(){
         int ret = 0;
-        ret = read_all_holding_register();
+        int start = 880;
+        ret = read_all_holding_register(start,batterydata_buffer);
+        if(ret != 0) {
+            return {"GET_BACTTERTY_STATE failed"};
+        }
+        ret = get_battery_state(start, batterydata_buffer);
+        if(ret != 0) {
+            return {"GET_BACTTERTY_STATE failed"};
+        }
         std::string val = {}; 
         if(ret == 0) {
            json temp;
@@ -239,10 +271,10 @@ public:
 public:
 
     void run();   
-    int read_all_holding_register();
-    int get_motorcontroll_state();
-    int get_battery_state();
-    int get_car_state();
+    int read_all_holding_register(int start, int16_t *data_buffer);
+    int get_motorcontroll_state(int start, int16_t *data_buffer, int motorclass);
+    int get_battery_state(int start, int16_t *data_buffer);
+    int get_car_state(int start, int16_t *data_buffer);
 
 private:
     static std::atomic<bool> alive;
@@ -309,6 +341,9 @@ private:
     int16_t Astate=0;
     int16_t Mstate=0;
     
-
+    static const int16_t amount = 100;
+    int16_t motordata_buffer[amount];
+    int16_t batterydata_buffer[amount];
+    int16_t cardata_buffer[amount];
 };
 
