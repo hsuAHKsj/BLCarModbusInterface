@@ -13,3 +13,5 @@ add_executable(main ./src/main.cpp ${source})
 target_link_libraries(main PRIVATE libspdlog.a -lpthread) 
 target_include_directories(main PRIVATE /usr/local/include ./include)
 
+# 添加可执行文件
+add_executable(test test/cpp/client.cpp)

@@ -29,18 +29,22 @@ const std::string Manual_State = "车体状态-手动";
 const std::string control_Word1="左驱动轮电机使能-控制字";
 const std::string status_Word1="左驱动轮电机-状态字";
 const std::string current_Speed1="左驱动轮电机-当前速度RPM";
+const std::string target_Speed1="左驱动轮电机-目标速度RPM";
 const std::string current_PositionL1="左驱动轮电机-当前位置L";
 const std::string current_PositionH1="左驱动轮电机-当前位置H";
+
 
 const std::string control_Word2="右驱动轮电机使能-控制字";
 const std::string status_Word2="右驱动轮电机-状态字";
 const std::string current_Speed2="右驱动轮电机-当前速度RPM";
+const std::string target_Speed2="右驱动轮电机-目标速度RPM";
 const std::string current_PositionL2="右驱动轮电机-当前位置L";
 const std::string current_PositionH2="右驱动轮电机-当前位置H";
 
 const std::string control_Word3="举升电机使能-控制字";
 const std::string status_Word3="举升电机-状态字";
 const std::string current_Speed3="举升电机-当前速度RPM";
+const std::string target_Speed3="举升电机-目标速度RPM";
 const std::string current_PositionL3="举升电机-当前位置L";
 const std::string current_PositionH3="举升电机-当前位置H";
 
@@ -75,8 +79,15 @@ public:
         int ret = 0;
         {
             std::unique_lock<std::mutex> lock(mutex);
+            std::cout << "description =" << description << std::endl;
+            std::cout << "value =" << value<< std::endl;
+
             ret = modbusptr->write_register(description, value);
+            
         }
+
+        std::cout << "send Over =" << std::endl;
+
         return ret;
         //std::cout << "Writing to register: " << value << std::endl;
     }
@@ -85,6 +96,7 @@ public:
     static int EMERGENCY_STOP(){
         int ret = 0;
         alive = false;
+
         return ret;
     }
 
@@ -128,27 +140,30 @@ public:
     int SPEEDJ_LEFT_WHEEL_MOTOR(int speed){
         int ret = 0;
         if(!alive) {
+            writeRegister(target_Speed1, 0);
             return EMERGENCY_STOP_FLAG;
         }
-        ret = writeRegister(current_Speed1, speed);
+        ret = writeRegister(target_Speed1, speed);
         return ret;
     }
 
     int SPEEDJ_RIGHT_WHEEL_MOTOR(int speed){
         int ret = 0;
         if(!alive) {
+            writeRegister(target_Speed2, 0);
             return EMERGENCY_STOP_FLAG;
         }
-        ret = writeRegister(current_Speed2, speed);
+        ret = writeRegister(target_Speed2, speed);
         return ret;
     }
 
     int SPEEDJ_LIFTER_MOTOR(int speed) {
         int ret = 0;
         if(!alive) {
+            writeRegister(target_Speed3, 0);
             return EMERGENCY_STOP_FLAG;
         }
-        ret = writeRegister(current_Speed3, speed);
+        ret = writeRegister(target_Speed3, speed);
         return ret;    
     } 
 

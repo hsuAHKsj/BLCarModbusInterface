@@ -1,13 +1,14 @@
 // modbus_wrapper.cpp
-#include "modbus_wrapper.h"
+#include "modbus/modbus_wrapper.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "common.h"
+
 ModbusWrapper::ModbusWrapper(const std::string &ip, int port) {    
     mb_ptr = new modbus(ip, port);
+    mb_ptr->modbus_set_slave_id(1);
 }
 
 std::string read_csv_file(const std::string &file_path) {
@@ -17,7 +18,6 @@ std::string read_csv_file(const std::string &file_path) {
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
-            std::cout << "cfg :\r\n " << line << "\r\n";
             content += line + "\n";
         }
         file.close();
@@ -33,8 +33,6 @@ void ModbusWrapper::parse_config(const std::string csv_data)
 {
     std::map<std::string, int> config_map;
     std::string data = read_csv_file(csv_data); 
-    std::cout << "data " << std::endl;
-    std::cout << data << std::endl;
     
     std::istringstream ss(data);
     std::string line;
@@ -66,25 +64,19 @@ ModbusWrapper::~ModbusWrapper() {
     close();
 }
 
-int ModbusWrapper::connect() {
-    
-    if(mb_ptr->modbus_connect()){
-        return 0;
-    }
-
-    return -1;
+bool ModbusWrapper::connect() {
+    return mb_ptr->modbus_connect();
 }
 
 void ModbusWrapper::close() {
     mb_ptr->modbus_close();
 }
 
-int ModbusWrapper::read_holding_register(const std::string &description, int16_t *value) {
+int ModbusWrapper::read_holding_register(const std::string &description, uint16_t *value) {
     auto it = config.find(description);
 
     if (it != config.end()) {
         int address = it->second;
-        // std::cout << "address: " << description << " int : " << address << " == ";
         return mb_ptr->modbus_read_holding_registers(address, 1, value);
     }
     return -1;
@@ -94,7 +86,6 @@ int ModbusWrapper::write_register(const std::string &description, int value) {
     auto it = config.find(description);
     if (it != config.end()) {
     int address = it->second;
-    std::cout << "address = " << address << std::endl;
     return mb_ptr->modbus_write_register(address, value);
     }
     return -1;
@@ -103,7 +94,7 @@ int ModbusWrapper::write_register(const std::string &description, int value) {
 Register ModbusWrapper::read_all_holding_registers(bool print) {
     Register result;
     for (const auto &item : config) {
-        int16_t value = 0;
+        uint16_t value = 0;
         if (read_holding_register(item.first, &value) >= 0) {
             result[item.first] = value;
         }
@@ -119,10 +110,3 @@ Register ModbusWrapper::read_all_holding_registers(bool print) {
 
     return result;
 }
-
-int ModbusWrapper::read_all_holding_registers(int16_t address, int16_t amount, int16_t *buffer){
-	return  mb_ptr->modbus_read_holding_registers(address, amount, buffer);
-
-}
-
-
