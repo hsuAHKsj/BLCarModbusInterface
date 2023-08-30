@@ -1,7 +1,11 @@
 import socket
+<<<<<<< Updated upstream
 
 # 客户端配置
 host = '192.168.1.62'  # 服务器的IP地址
+=======
+host = '192.168.8.163'  # 服务器的IP地址
+>>>>>>> Stashed changes
 port = 8888        # 服务器的端口号
 
 # 创建Socket对象
