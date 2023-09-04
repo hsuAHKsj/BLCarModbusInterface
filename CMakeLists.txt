@@ -9,6 +9,7 @@ set(source ./src/server.cpp
 
 include_directories(./include)
 link_directories(./lib)
+link_directories(./lib/gtest/ubuntu)
 
 include_directories(./lib/spdlog-1.12.0/include)
 include_directories(./lib/json-develop/include)
@@ -21,3 +22,10 @@ target_link_libraries(main PRIVATE libspdlog.a -lpthread)
 # 添加可执行文件
 add_executable(testTCPClient test/cpp/TCPClient.cpp)
 target_link_libraries(testTCPClient libspdlog.a) 
+
+add_executable(
+  gtest_connection_test
+  test/gtest/gtest_connection_test.cpp
+)
+
+target_link_libraries(gtest_connection_test libgtest.a -lpthread)
