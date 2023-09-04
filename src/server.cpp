@@ -53,9 +53,9 @@ static std::regex disconnect("DISCONNECT\\(\\)");
 static std::regex emergency_stop("EMERGENCY_STOP\\(\\)");
 static std::regex motor_enable("MOTOR_ENABLE\\(\\)");
 
-static std::regex speedj_left_wheel_motor(R"(SPEEDJ_LEFT_WHEEL_MOTOR\((-?\d+)\))");
-static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((-?\d+)\))");
-static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((-?\d+)\))");
+static std::regex speedj_left_wheel_motor(R"(SPEEDJ_LEFT_WHEEL_MOTOR\((\d+)\))");
+static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((\d+)\))");
+static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((\d+)\))");
 
 
 static std::regex get_left_motor_state("GET_LEFT_MOTOR_STATE\\(\\)");
@@ -201,6 +201,10 @@ void SocketServer::handleClient(int clientSocket) {
             continue;
         }
 
+        //
+        {
+
+        }
 
         std::string success = "{success}";
         send(clientSocket, success.c_str(), success.size(), 0);

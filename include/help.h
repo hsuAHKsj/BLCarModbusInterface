@@ -40,6 +40,8 @@ private:
         spdlog::info("GET_LIFTER_MOTOR_STATE()");
         spdlog::info("GET_CAR_STATE()");
         spdlog::info("GET_BACTTERTY_STATE()");
+
+        
         // 添加其他支持的指令和描述
     }
 

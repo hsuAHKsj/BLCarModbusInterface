@@ -9,16 +9,6 @@ void Controller::run(){
         while (connectflag) {
             {
                 if(!alive) {
-                    // 不知道跟这个写法有没有关系
-                    SPEEDJ_RIGHT_WHEEL_MOTOR(0);
-                    sleep(0.1);
-                    SPEEDJ_LEFT_WHEEL_MOTOR(0);
-                    sleep(0.1);
-                    SPEEDJ_LIFTER_MOTOR(0);
-                    sleep(0.1);
-                    spdlog::info("inactive state");
-                    sleep(0.7);
-
                     continue;
                 } 
 
@@ -35,12 +25,10 @@ void Controller::run(){
                 // motorController.setSpeed(1, registerValue);
                 // motorController.setSpeed(2, registerValue * 2);
                 // motorController.setSpeed(3, registerValue * 3);
-
-                // SPEEDJ_RIGHT_WHEEL_MOTOR(int speed);
-
                 spdlog::debug("connect contorl thread");
 
                 condition.wait_for(lock, std::chrono::seconds(1)); // 每秒执行一次
+
             }
         }
     } 
@@ -229,7 +217,6 @@ int Controller::get_motorcontroll_state(int start, int16_t *data_buffer, int mot
     }
     return 0;
 }
-
 int Controller::get_car_state(int start, int16_t *data_buffer) {
 
     int index;
@@ -252,6 +239,9 @@ int Controller::get_car_state(int start, int16_t *data_buffer) {
 
     return 0;
 } 
+
+
+
 
 
 int Controller::read_all_holding_register(int start, int16_t *data_buffer) {

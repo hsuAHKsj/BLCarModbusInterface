@@ -94,7 +94,6 @@ int ModbusWrapper::write_register(const std::string &description, int value) {
     auto it = config.find(description);
     if (it != config.end()) {
     int address = it->second;
-    std::cout << "address = " << address << std::endl;
     return mb_ptr->modbus_write_register(address, value);
     }
     return -1;
