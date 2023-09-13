@@ -31,3 +31,8 @@ address,description,data_type
 11,车体状态-手动,int
 895,声光接口-读取,int
 896,声光接口-写入,int
+405,叉尖检测L-读取,int
+406,叉尖检测R-读取,int
+407,安全触边-读取,int
+404,举升上限-读取,int
+408,举升下限-读取,int

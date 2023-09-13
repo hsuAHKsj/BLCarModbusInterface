@@ -1,0 +1,5 @@
+/home/orangepi/Desktop/BLCarModbusInterface/build/CMakeFiles/main.dir
+/home/orangepi/Desktop/BLCarModbusInterface/build/CMakeFiles/testTCPClient.dir
+/home/orangepi/Desktop/BLCarModbusInterface/build/CMakeFiles/gtest_connection_test.dir
+/home/orangepi/Desktop/BLCarModbusInterface/build/CMakeFiles/edit_cache.dir
+/home/orangepi/Desktop/BLCarModbusInterface/build/CMakeFiles/rebuild_cache.dir

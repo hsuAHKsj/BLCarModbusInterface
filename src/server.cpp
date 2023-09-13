@@ -43,8 +43,6 @@ void SocketServer::start() {
     }
 }
 
-
-
  // 正则表达式解析
 static std::regex mconnect("CONNECT\\((\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\)");
 static std::regex disconnect("DISCONNECT\\(\\)");
@@ -53,10 +51,9 @@ static std::regex disconnect("DISCONNECT\\(\\)");
 static std::regex emergency_stop("EMERGENCY_STOP\\(\\)");
 static std::regex motor_enable("MOTOR_ENABLE\\(\\)");
 
-static std::regex speedj_left_wheel_motor(R"(SPEEDJ_LEFT_WHEEL_MOTOR\((\d+)\))");
-static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((\d+)\))");
-static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((\d+)\))");
-
+static std::regex speedj_left_wheel_motor(R"(SPEEDJ_LEFT_WHEEL_MOTOR\((-?\d+)\))");
+static std::regex speedj_right_wheel_motor(R"(SPEEDJ_RIGHT_WHEEL_MOTOR\((-?\d+)\))");
+static std::regex speedj_lifter_motor(R"(SPEEDJ_LIFTER_MOTOR\((-?\d+)\))");
 
 static std::regex get_left_motor_state("GET_LEFT_MOTOR_STATE\\(\\)");
 static int left_motor_state;
@@ -133,6 +130,8 @@ void SocketServer::handleClient(int clientSocket) {
         }else if(std::regex_search(request, match, speedj_left_wheel_motor)){
             std::string sspeed = std::string(match[1]);
             int speed = std::stoi(sspeed);
+            std::cout << "speed_left = " << speed << std::endl;
+            
             ret = mcontroller->SPEEDJ_LEFT_WHEEL_MOTOR(static_cast<int16_t>(speed));
             if(ret ==  EMERGENCY_STOP_FLAG ) {
                 send(clientSocket, fail2.c_str(), fail2.size(), 0);
@@ -143,6 +142,8 @@ void SocketServer::handleClient(int clientSocket) {
         }else if(std::regex_search(request, match, speedj_right_wheel_motor)){
             std::string sspeed = std::string(match[1]);
             int speed = std::stoi(sspeed);
+            std::cout << "speed_right = " << speed << std::endl;
+
             ret = mcontroller->SPEEDJ_RIGHT_WHEEL_MOTOR(static_cast<int16_t>(speed));
             if(ret ==  EMERGENCY_STOP_FLAG ) {
                 send(clientSocket, fail2.c_str(), fail2.size(), 0);
@@ -153,6 +154,7 @@ void SocketServer::handleClient(int clientSocket) {
         }else if(std::regex_search(request, match, speedj_lifter_motor)){
             std::string sspeed = std::string(match[1]);
             int speed = std::stoi(sspeed);
+            
             ret = mcontroller->SPEEDJ_LIFTER_MOTOR(static_cast<int16_t>(speed));
             if(ret ==  EMERGENCY_STOP_FLAG ) {
                 send(clientSocket, fail2.c_str(), fail2.size(), 0);

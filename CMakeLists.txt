@@ -24,8 +24,15 @@ add_executable(testTCPClient test/cpp/TCPClient.cpp)
 target_link_libraries(testTCPClient libspdlog.a) 
 
 add_executable(
-  gtest_connection_test
-  test/gtest/gtest_connection_test.cpp
+  gtest_lifter_motion
+  test/gtest/gtest_lifter_motion.cpp
 )
 
-target_link_libraries(gtest_connection_test libgtest.a -lpthread)
+target_link_libraries(gtest_lifter_motion libgtest.a -lpthread)
+
+add_executable(
+  gtest_wheel_motion
+  test/gtest/gtest_wheel_motion.cpp
+)
+
+target_link_libraries(gtest_wheel_motion libgtest.a -lpthread)
