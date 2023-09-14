@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -rdynamic CMakeFiles/testTCPClient.dir/test/cpp/TCPClient.cpp.o -o testTCPClient   -L/home/orangepi/Desktop/BLCarModbusInterface/./lib  -L/home/orangepi/Desktop/BLCarModbusInterface/./lib/gtest/ubuntu  -Wl,-rpath,/home/orangepi/Desktop/BLCarModbusInterface/./lib:/home/orangepi/Desktop/BLCarModbusInterface/./lib/gtest/ubuntu -Wl,-Bstatic -lspdlog -Wl,-Bdynamic 

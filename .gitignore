@@ -1,4 +1,4 @@
-lib/json-develop/*
-lib/spdlog-1.12.0/*
+lib/json-develop/build/*
+lib/spdlog-1.12.0/build/*
 *.a
 build/*
