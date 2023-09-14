@@ -33,7 +33,7 @@ endif ()
 
 # VERSION_GREATER_EQUAL is not available in CMake 3.1
 if(${MAIN_PROJECT} AND (${CMAKE_VERSION} VERSION_EQUAL 3.13 OR ${CMAKE_VERSION} VERSION_GREATER 3.13))
-    set(JSON_BuildTests_INIT ON)
+    set(JSON_BuildTests_INIT OFF)
 else()
     set(JSON_BuildTests_INIT OFF)
 endif()

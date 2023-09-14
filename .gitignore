@@ -1,4 +1,5 @@
 lib/json-develop/build/*
 lib/spdlog-1.12.0/build/*
+lib/googletest/build/*
 *.a
 build/*
